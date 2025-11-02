@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Turnos - Finanzas Seguras</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .container { max-width: 600px; margin: 0 auto; }
+        .input-group { margin-bottom: 10px; }
+        .button { padding: 10px 20px; margin-right: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Sistema de Turnos</h1>
+        <div class="input-group">
+            <label for="clientName">Nombre del Cliente:</label>
+            <input type="text" id="clientName" placeholder="Ingrese el nombre del cliente">
+            <button class="button" onclick="assignTurn()">Asignar Turno</button>
+        </div>
+        <div>
+            <button class="button" onclick="attendNext()">Atender Siguiente</button>
+            <button class="button" onclick="showStatistics()">Ver Estadísticas del Día</button>
+        </div>
+        <h2>Lista de Turnos</h2>
+        <ul id="turnList"></ul>
+        <h2>Estadísticas</h2>
+        <div id="statistics"></div>
+    </div>
+    <script>
+        // Array para almacenar los nombres de los clientes
+        let turnos = [];
+        let attendedClients = 0; // Contador de clientes atendidos
+
+        // Función para asignar un turno
+        function assignTurn() {
+            const clientName = document.getElementById('clientName').value.trim();
+            if (clientName === '') {
+                alert('El nombre del cliente no puede estar vacío.');
+                return;
+            }
+            if (turnos.includes(clientName)) {
+                alert('El nombre del cliente ya está en la lista.');
+                return;
+            }
+            turnos.push(clientName);
+            updateTurnList();
+            document.getElementById('clientName').value = '';
+        }
+
+        // Función para actualizar la lista de turnos en la pantalla
+        function updateTurnList() {
+            const turnList = document.getElementById('turnList');
+            turnList.innerHTML = '';
+            turnos.forEach((client, index) => {
+                const li = document.createElement('li');
+                li.textContent = `T-${index + 1}: ${client}`;
+                turnList.appendChild(li);
+            });
+        }
+
+        // Función para atender al siguiente cliente
+        function attendNext() {
+            if (turnos.length === 0) {
+                alert('No hay más clientes en la cola.');
+                return;
+            }
+            const client = turnos.shift();
+            attendedClients++; // Incrementar el contador de clientes atendidos
+            alert(`Atendiendo a: ${client}`);
+            updateTurnList();
+        }
+
+        // Función para mostrar las estadísticas del día
+        function showStatistics() {
+            const totalTurns = turnos.length + attendedClients;
+            const pending = turnos.length;
+            const percentageAttended = (attendedClients / totalTurns) * 100;
+
+            const statistics = document.getElementById('statistics');
+            statistics.innerHTML = `
+                <p>Turnos totales: ${totalTurns}</p>
+                <p>Atendidos: ${attendedClients}</p>
+                <p>Pendientes: ${pending}</p>
+                <p>Porcentaje atendido: ${percentageAttended.toFixed(2)}%</p>
+            `;
+            if (pending === 0) {
+                statistics.innerHTML += '<p>Jornada cerrada. No hay más turnos pendientes.</p>';
+            }
+        }
+    </script>
+</body>
+</html>
